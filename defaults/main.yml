@@ -1,0 +1,7 @@
+# Flannel configuration
+flannel_version: 0.10.0
+
+# Kubernetes configuration (also defined in kubernetes_master/node role)
+kube_iface: eth0
+kube_pod_cidr_range: 10.201.0.0/16
+kube_kubelet_config: /var/lib/kubelet/kubeconfig

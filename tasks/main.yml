@@ -1,0 +1,31 @@
+- name: Ensure python-setuptools is installed
+  package: name=python-setuptools state=latest
+- name: Ensure pip is installed
+  easy_install: name="pip==18.1" state=present
+- name: Ensure setuptools is installed in pip
+  pip: name="setuptools==40.4.3" state=present
+- name: Ensure openshift python library is installed (for k8s module)
+  pip: name="openshift==0.7.2" state=present extra_args=--ignore-installed
+
+- name: Create flannel deployment file
+  template: src=flannel.yml.j2 dest=/etc/kubernetes/flannel.yml
+  register: flannel_deployment_file_result
+- name: Apply flannel deployment
+  k8s: state=present src=/etc/kubernetes/flannel.yml kubeconfig={{ kube_kubelet_config }}
+  run_once: true
+
+- name: Wait for flannel env file (up to 5 minutes)
+  wait_for: path=/var/run/flannel/subnet.env timeout=300
+- name: Read cidr from flannel env file
+  command: grep FLANNEL_SUBNET= /var/run/flannel/subnet.env
+  register: flannel_subnet_result
+  changed_when: false
+- name: Read flannel subnet
+  set_fact: flannel_subnet={{ flannel_subnet_result.stdout.split('=')[1] }}
+- name: Read flannel IP
+  set_fact: flannel_ip={{ flannel_subnet.split('/')[0] }}
+- name: Configure docker for flannel subnet
+  lineinfile: path=/etc/sysconfig/docker regexp=^DOCKER_BIP= line=DOCKER_BIP={{ flannel_subnet }}
+- name: Restart docker service
+  service: name=docker state=restarted
+  when: ansible_docker0 is not defined or ansible_docker0.ipv4.address != flannel_ip

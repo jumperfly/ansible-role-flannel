@@ -23,9 +23,14 @@
 - name: Configure docker for flannel subnet
   lineinfile: path=/etc/sysconfig/docker regexp=^DOCKER_BIP= line=DOCKER_BIP={{ flannel_subnet }}
 - name: Restart docker service
-  service: name=docker state=restarted sleep=20
+  service: name={{ item.service }} state={{ item.state }}
   when: ansible_docker0 is not defined or ansible_docker0.ipv4.address != flannel_ip
   register: restart_docker_result
+  loop:
+  - { service: kubelet, state: stopped }
+  - { service: docker, state: stopped }
+  - { service: docker, state: started }
+  - { service: kubelet, state: started }
 
 - name: Wait for apiserver to start (up to 5 minutes)
   wait_for: port=8080 timeout=300

@@ -25,3 +25,15 @@
 - name: Restart docker service
   service: name=docker state=restarted
   when: ansible_docker0 is not defined or ansible_docker0.ipv4.address != flannel_ip
+  register: restart_docker_result
+
+- name: Wait for apiserver to start (up to 5 minutes)
+  wait_for: port=8080 timeout=300
+  register: wait_for_apiserver_result
+  when: restart_docker_result.changed
+  delegate_to: "{{ kubectl_host }}"
+  run_once: true
+- name: Pause for apiserver to start fully (20 seconds)
+  pause: seconds=20
+  when: wait_for_apiserver_result.elapsed|default(0) > 0
+  run_once: true

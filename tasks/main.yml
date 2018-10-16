@@ -21,7 +21,7 @@
 - name: Read flannel IP
   set_fact: flannel_ip={{ flannel_subnet.split('/')[0] }}
 - name: Configure docker for flannel subnet
-  lineinfile: path=/etc/sysconfig/docker regexp=^DOCKER_BIP= line=DOCKER_BIP={{ flannel_subnet }}
+  lineinfile: path=/etc/sysconfig/docker regexp=^DOCKER_BIP= line=DOCKER_BIP=--bip {{ flannel_subnet }}
 - name: Restart docker service
   service: name={{ item.service }} state={{ item.state }}
   when: ansible_docker0 is not defined or ansible_docker0.ipv4.address != flannel_ip

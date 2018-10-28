@@ -1,3 +1,6 @@
+- name: Pull flannel image
+  docker_image: name=quay.io/coreos/flannel tag=v{{ flannel_version }}-amd64
+
 - name: Create flannel deployment file
   template: src=flannel.yml.j2 dest=/etc/kubernetes/flannel.yml
   register: flannel_deployment_file_result
@@ -10,8 +13,8 @@
   delegate_to: "{{ kubectl_host }}"
   run_once: true
 
-- name: Wait for flannel env file (up to 5 minutes)
-  wait_for: path=/var/run/flannel/subnet.env timeout=300
+- name: Wait for flannel env file - 30 seconds
+  wait_for: path=/var/run/flannel/subnet.env timeout=30
 - name: Read cidr from flannel env file
   command: grep FLANNEL_SUBNET= /var/run/flannel/subnet.env
   register: flannel_subnet_result
@@ -32,13 +35,13 @@
   - { service: docker, state: started }
   - { service: kubelet, state: started }
 
-- name: Wait for apiserver to start (up to 5 minutes)
-  wait_for: port=8080 timeout=300
+- name: Wait for apiserver to start - 30 seconds
+  wait_for: port=8080 timeout=30
   register: wait_for_apiserver_result
   when: restart_docker_result.changed
   delegate_to: "{{ kubectl_host }}"
   run_once: true
-- name: Pause for apiserver to start fully (20 seconds)
-  pause: seconds=20
+- name: Pause for apiserver to start fully - 30 seconds
+  pause: seconds=30
   when: wait_for_apiserver_result.elapsed|default(0) > 0
   run_once: true

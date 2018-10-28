@@ -1,3 +1,7 @@
+dependencies:
+  - src: jumperfly.ansible_common
+    version: v0.1.0
+
 galaxy_info:
   role_name: flannel
   author: jumperfly

@@ -1,5 +1,5 @@
 - name: Pull flannel image
-  docker_image: name=quay.io/coreos/flannel tag=v{{ flannel_version }}-amd64
+  docker_image: name={{ flannel_docker_registry }}/coreos/flannel tag=v{{ flannel_version }}-amd64
 
 - name: Create flannel deployment file
   template: src=flannel.yml.j2 dest=/etc/kubernetes/flannel.yml

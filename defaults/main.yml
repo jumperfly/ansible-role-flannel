@@ -1,5 +1,6 @@
 # Flannel configuration
 flannel_version: 0.10.0
+flannel_docker_registry: quay.io
 kubectl_host: "{{ groups['kube_master_nodes'][0] }}"
 
 # Kubernetes configuration (also defined in kubernetes_master/node role)

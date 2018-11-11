@@ -6,4 +6,12 @@ kubectl_host: "{{ groups['kubernetes_master_nodes'][0] }}"
 # Kubernetes configuration (also defined in kubernetes_master/node role)
 kube_iface: eth0
 kube_pod_cidr_range: 10.201.0.0/16
-kube_kubelet_config: /var/lib/kubelet/kubeconfig
+
+# Workaround as k8s module doesn't appear to like this embedded in k8s.yml
+flannel_net_conf_json_data: |
+  {
+    "Network": "{{ kube_pod_cidr_range }}",
+    "Backend": {
+      "Type": "vxlan"
+    }
+  }

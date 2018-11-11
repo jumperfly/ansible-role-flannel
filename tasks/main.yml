@@ -1,17 +1,9 @@
 - name: Pull flannel image
   docker_image: name={{ flannel_docker_registry }}/coreos/flannel tag=v{{ flannel_version }}-amd64
 
-- name: Create flannel deployment file
-  template: src=flannel.yml.j2 dest=/etc/kubernetes/flannel.yml
-  register: flannel_deployment_file_result
-- name: Apply flannel deployment
-  command: kubectl apply -f /etc/kubernetes/flannel.yml
-  environment:
-    KUBECONFIG: "{{ kube_kubelet_config }}"
-  register: kubectl_result
-  changed_when: kubectl_result.stdout is search("configured|created")
-  delegate_to: "{{ kubectl_host }}"
+- name: Deploy flannel
   run_once: true
+  include_tasks: k8s.yml
 
 - name: Wait for flannel env file - 30 seconds
   wait_for: path=/var/run/flannel/subnet.env timeout=30

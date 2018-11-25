@@ -1,7 +1,7 @@
 # Flannel configuration
 flannel_version: 0.10.0
 flannel_docker_registry: quay.io
-flannel_iface: "{{ default_ipv4.alias }}"
+flannel_iface: "{{ ansible_default_ipv4.alias }}"
 
 # Kubernetes configuration (also defined in kubernetes_master/node role)
 kube_pod_cidr_range: 10.201.0.0/16

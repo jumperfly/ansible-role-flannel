@@ -120,7 +120,7 @@
               args:
               - --ip-masq
               - --kube-subnet-mgr
-              - --iface={{ kube_iface }}
+              - --iface={{ flannel_iface }}
               resources:
                 requests:
                   cpu: "100m"

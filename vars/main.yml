@@ -1,0 +1,10 @@
+# These are generally not expected to change, so defined in vars instead of defaults
+
+# Workaround as k8s module doesn't appear to like this embedded in k8s.yml
+flannel_net_conf_json_data: |
+  {
+    "Network": "{{ kube_pod_cidr_range }}",
+    "Backend": {
+      "Type": "vxlan"
+    }
+  }

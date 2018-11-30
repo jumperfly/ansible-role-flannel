@@ -20,19 +20,8 @@
 - name: Restart docker service
   service: name={{ item.service }} state={{ item.state }}
   when: ansible_docker0 is not defined or ansible_docker0.ipv4.address != flannel_ip
-  register: restart_docker_result
+  notify: wait for apiserver
   loop:
   - { service: kubelet, state: stopped }
-  - { service: docker, state: stopped }
-  - { service: docker, state: started }
+  - { service: docker, state: restarted }
   - { service: kubelet, state: started }
-
-- name: Wait for apiserver to start - 30 seconds
-  when: restart_docker_result.changed
-  uri:
-    url: http://127.0.0.1:8080/healthz
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 30
-  delay: 1

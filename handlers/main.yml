@@ -1,5 +1,4 @@
 - name: wait for apiserver
-  when: restart_docker_result.changed
   uri:
     url: http://127.0.0.1:8080/healthz
     status_code: 200

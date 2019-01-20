@@ -1,4 +1,6 @@
 - name: wait for apiserver
+  run_once: true
+  delegate_to: "{{ flannel_apiserver_delegate }}"
   uri:
     url: http://127.0.0.1:8080/healthz
     status_code: 200

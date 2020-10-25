@@ -1,7 +1,8 @@
 - name: Deploy flannel
   k8s:
-    kubeconfig: /etc/kubernetes/kubeconfig-local
+    kubeconfig: "{{ flannel_kubeconfig }}"
     definition: "{{ item }}"
+  delegate_to: "{{ flannel_apiserver_delegate }}"
   loop_control:
     label: "{{ item.kind }}/{{ item.metadata.name }}"
   loop:
